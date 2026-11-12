@@ -1,0 +1,83 @@
+# Scaffold CRD. Regenerate the authoritative version with `make manifests`.
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: accesspolicies.policy.bridge.armada.ai
+spec:
+  group: policy.bridge.armada.ai
+  names:
+    kind: AccessPolicy
+    listKind: AccessPolicyList
+    plural: accesspolicies
+    singular: accesspolicy
+    shortNames: [accesspolicy, ap]
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Ingress
+          type: string
+          jsonPath: .spec.ingress.publicEndpoints
+        - name: Egress
+          type: string
+          jsonPath: .spec.egress.defaultAction
+        - name: Reachable
+          type: boolean
+          jsonPath: .status.ingress.effectiveReachable
+        - name: Consistent
+          type: boolean
+          jsonPath: .status.ingress.consistent
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required: [endpointRef, podSelector, ingress, egress]
+              properties:
+                endpointRef:
+                  type: object
+                  required: [tenantID, clusterID, endpointID, hostname]
+                  properties:
+                    tenantID: { type: string }
+                    clusterID: { type: string }
+                    endpointID: { type: string }
+                    hostname: { type: string }
+                podSelector:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                ingress:
+                  type: object
+                  required: [publicEndpoints, endpointRequested]
+                  properties:
+                    publicEndpoints:
+                      type: string
+                      enum: [ALLOW, DENY]
+                      default: ALLOW
+                    endpointRequested: { type: boolean }
+                    enableExternalIP: { type: boolean }
+                egress:
+                  type: object
+                  required: [defaultAction]
+                  properties:
+                    defaultAction:
+                      type: string
+                      enum: [ALLOW, DENY]
+                      default: DENY
+                    allowedFQDNs:
+                      type: array
+                      items: { type: string }
+                verification:
+                  type: object
+                  properties:
+                    enabled: { type: boolean, default: true }
+                    path: { type: string }
+                    timeoutSeconds: { type: integer, default: 10 }
+                    insecureTLS: { type: boolean }
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true

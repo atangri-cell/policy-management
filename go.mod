@@ -1,0 +1,11 @@
+module github.com/armadasystems/policy-management
+
+go 1.23.0
+
+require (
+	github.com/go-logr/logr v1.4.2
+	k8s.io/api v0.30.3
+	k8s.io/apimachinery v0.30.3
+	k8s.io/client-go v0.30.3
+	sigs.k8s.io/controller-runtime v0.18.4
+)

@@ -1,0 +1,10 @@
+/bin/
+/testbin/
+*.test
+*.out
+cover.out
+__debug_bin*
+.DS_Store
+.idea/
+.vscode/
+vendor/
